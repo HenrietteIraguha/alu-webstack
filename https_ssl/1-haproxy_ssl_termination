@@ -1,0 +1,30 @@
+global
+    log /dev/log local0
+    maxconn 2048
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    retries 3
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+frontend https_front
+    bind *:443 ssl crt /etc/haproxy/certs/www.henrietteinc.tech.pem
+    default_backend http_back
+
+
+backend http_back
+    balance roundrobin
+    server 7035-web-01 3.92.192.114:80 check
+    server 7035-web-02 54.82.239.91:80 check
